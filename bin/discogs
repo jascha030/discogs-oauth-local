@@ -1,0 +1,22 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use GuzzleHttp\Exception\GuzzleException;
+use Jaschavanaalst\Discogs\API\TokenProvider;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+if (function_exists('xdebug_disable')) {
+    xdebug_disable();
+}
+
+$provider = new TokenProvider();
+try {
+    $status = $provider->getToken();
+} catch (GuzzleException $e) {
+    exit(1);
+}
+
+exit(0);
