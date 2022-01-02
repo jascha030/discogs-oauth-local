@@ -1,0 +1,32 @@
+{
+  "name": "jaschavanaalst/discogs",
+  "description": "Testing the discogs api",
+  "require-dev": {
+    "roave/security-advisories": "dev-latest",
+    "phpunit/phpunit": "^9.5",
+    "friendsofphp/php-cs-fixer": "^3.4"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Jaschavanaalst\\Discogs\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Jascha030",
+      "email": "contact@jaschavanaalst.nl"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "guzzlehttp/guzzle": "^7.4",
+    "php": "8.0||8.1"
+  },
+  "bin": [
+    "bin/discogs"
+  ],
+  "scripts": {
+    "phpunit": "vendor/bin/phpunit"
+  }
+}
