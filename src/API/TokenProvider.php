@@ -14,6 +14,12 @@ class TokenProvider
 {
     private array $data;
 
+    public function __construct(
+        private string $key,
+        private string $signature
+    )
+    {}
+
     /**
      * @throws GuzzleException
      */
@@ -45,9 +51,16 @@ class TokenProvider
             @$server->handle('/', function (\Swoole\Http\Request $request, Response $response) use ($server) {
                 if (isset ($request->get['oauth_token'])) {
                     file_put_contents(dirname(__FILE__, 3) . '/token.json', json_encode($request->get, JSON_THROW_ON_ERROR));
-                    $response->end("Discogs has authorized your request.");
+                    echo "Discogs has successfully authorized your request.";
+
+                    @$response->end("Discogs has authorized your request.");
                     @$server->shutdown();
                 }
+
+                echo "Failed: Discogs could not authorize your request.";
+
+                @$response->end("Discogs could not authorize your request.");
+                @$server->shutdown();
             });
 
             @$server->start();
@@ -62,9 +75,9 @@ class TokenProvider
         $request = new Request('GET', 'https://api.discogs.com/oauth/request_token', [
             'Content-Type'  => 'application/x-www-form-urlencoded',
             'Authorization' => implode(',', [
-                'OAuth oauth_consumer_key="dcHnQedYLAmhBgBBkZQA"',
+                'OAuth oauth_consumer_key="' . $this->key . '"',
                 'oauth_nonce="' . time() . '"',
-                'oauth_signature="HFqaUwdVfXmqVxLsOFwWjJdqJqnnIcwc&"',
+                'oauth_signature="' . $this->signature . '&"',
                 'oauth_signature_method="PLAINTEXT"',
                 'oauth_timestamp="' . time() . '"',
                 'oauth_callback="http://127.0.0.1:8080/"',

@@ -3,19 +3,55 @@
 
 declare(strict_types=1);
 
+use Dotenv\Dotenv;
 use GuzzleHttp\Exception\GuzzleException;
 use Jaschavanaalst\Discogs\API\TokenProvider;
 
-require_once __DIR__ . '/vendor/autoload.php';
+error_reporting(E_ALL ^ E_DEPRECATED);
+
+/**
+ * Function to get the correct autoloader based on the circumstances.
+ * Assures it's loaded for all possible situations (installed global, local, dev).
+ */
+$loader = static function (string $baseDir): string|bool {
+    foreach (['/..', '/../vendor', '/../../..'] as $dir) {
+        $path = "{$baseDir}/{$dir}/autoload.php";
+
+        if (file_exists($path)) {
+            return $path;
+        }
+    }
+
+    return false;
+};
+
+$autoloader = $loader(__DIR__);
+
+/**
+ * Exit when autoloader was not found.
+ */
+if (! $autoloader) {
+    exit(1);
+}
+
+include $autoloader;
 
 if (function_exists('xdebug_disable')) {
+    /** @noinspection PhpSingleStatementWithBracesInspection */
     xdebug_disable();
 }
 
-$provider = new TokenProvider();
+$env = Dotenv::createImmutable(dirname(__DIR__))->load();
+
+$provider = new TokenProvider(
+    $env['OAUTH_CONSUMER_KEY'],
+    $env['OAUTH_SIGNATURE']
+);
+
 try {
     $status = $provider->getToken();
-} catch (GuzzleException $e) {
+} catch (Exception|GuzzleException $e) {
+    fwrite(STDOUT, $e->getMessage());
     exit(1);
 }
 

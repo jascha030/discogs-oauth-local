@@ -21,7 +21,8 @@
   "minimum-stability": "stable",
   "require": {
     "guzzlehttp/guzzle": "^7.4",
-    "php": "8.0||8.1"
+    "php": "8.0||8.1",
+    "vlucas/phpdotenv": "^5.4"
   },
   "bin": [
     "bin/discogs"
